@@ -15,7 +15,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
-
 @Entity
 @Table(name = "listing_picture")
 public class ListingPicture extends AbstractAuditingEntity<Long> {
@@ -81,12 +80,15 @@ public class ListingPicture extends AbstractAuditingEntity<Long> {
         this.listing = listing;
     }
 
-      @Override
+    @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         ListingPicture that = (ListingPicture) o;
-        return isCover == that.isCover && Objects.deepEquals(file, that.file) && Objects.equals(fileContentType, that.fileContentType);
+        return isCover == that.isCover && Objects.deepEquals(file, that.file)
+                && Objects.equals(fileContentType, that.fileContentType);
     }
 
     @Override
