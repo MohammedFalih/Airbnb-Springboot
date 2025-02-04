@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CategoryService } from './category.service';
-import { Category } from './category.modal';
+import { Category } from './category.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { CategoryService } from './category.service';
 
 @Component({
   selector: 'app-category',
@@ -11,7 +11,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   styleUrl: './category.component.scss',
 })
 export class CategoryComponent implements OnInit {
-  categoryService: CategoryService = inject(CategoryService);
+categoryService: CategoryService = inject(CategoryService);
 
   categories: Category[] | undefined;
 

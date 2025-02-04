@@ -11,6 +11,7 @@ import { ToastService } from '../toast.service';
 import { User } from '../../core/model/user.model';
 import { AuthService } from '../../core/auth/auth.service';
 import { ActivatedRoute } from '@angular/router';
+import { PropertyCreateComponent } from '../../landlord/property-create/property-create.component';
 
 @Component({
   selector: 'app-navbar',
@@ -42,7 +43,7 @@ export class NavbarComponent implements OnInit {
 
   login = () => this.authService.login();
 
-  logout = () => this.authService.login();
+  logout = () => this.authService.logout();
 
   currentMenuItems: MenuItem[] | undefined = [];
 
@@ -105,5 +106,16 @@ export class NavbarComponent implements OnInit {
     return this.authService.hasAnyAuthority('ROLE_LANDLORD');
   }
 
+  openNewListing(): void {
+    this.ref = this.dialogService.open(PropertyCreateComponent, {
+      width: '60%',
+      header: 'Airbnb your home',
+      closable: true,
+      focusOnShow: true,
+      modal: true,
+      showHeader: true,
+    });
+  }
 
+  openNewSearch() {}
 }

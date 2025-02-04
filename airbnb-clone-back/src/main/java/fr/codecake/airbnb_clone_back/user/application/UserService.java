@@ -1,28 +1,26 @@
 package fr.codecake.airbnb_clone_back.user.application;
 
-import java.time.Instant;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import fr.codecake.airbnb_clone_back.infrastructure.config.SecurityUtils;
 import fr.codecake.airbnb_clone_back.user.application.dto.ReadUserDTO;
 import fr.codecake.airbnb_clone_back.user.domain.User;
 import fr.codecake.airbnb_clone_back.user.mapper.UserMapper;
 import fr.codecake.airbnb_clone_back.user.repository.UserRepository;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 public class UserService {
 
     private static final String UPDATED_AT_KEY = "updated_at";
-
     private final UserRepository userRepository;
-
     private final UserMapper userMapper;
 
     public UserService(UserRepository userRepository, UserMapper userMapper) {
@@ -32,8 +30,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public ReadUserDTO getAuthenticatedUserFromSecurityContext() {
-        OAuth2User principal = (OAuth2User) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
+        OAuth2User principal = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = SecurityUtils.mapOauth2AttributesToUser(principal.getAttributes());
         return getByEmail(user.getEmail()).orElseThrow();
     }
@@ -57,11 +54,9 @@ public class UserService {
                 } else {
                     idpModifiedDate = Instant.ofEpochSecond((Integer) attributes.get(UPDATED_AT_KEY));
                 }
-
                 if (idpModifiedDate.isAfter(lastModifiedDate) || forceResync) {
                     updateUser(user);
                 }
-
             }
         } else {
             userRepository.saveAndFlush(user);
@@ -81,8 +76,9 @@ public class UserService {
         }
     }
 
-    public Optional<ReadUserDTO> getByPublicId(UUID uuid) {
-        Optional<User> oneByPublicId = userRepository.findOneByPublicId(uuid);
+    public Optional<ReadUserDTO> getByPublicId(UUID publicId) {
+        Optional<User> oneByPublicId = userRepository.findOneByPublicId(publicId);
         return oneByPublicId.map(userMapper::readUserDTOToUser);
     }
+
 }

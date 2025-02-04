@@ -1,8 +1,9 @@
 package fr.codecake.airbnb_clone_back.user.domain;
 
-import fr.codecake.airbnb_clone_back.sharedkernal.domain.AbstractAuditingEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
+
+import fr.codecake.airbnb_clone_back.sharedkernal.domain.AbstractAuditingEntity;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -36,9 +37,9 @@ public class User extends AbstractAuditingEntity<Long> {
     private UUID publicId;
 
     @ManyToMany
-    @JoinTable(name = "user_authority", joinColumns = {
-            @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = {
-                    @JoinColumn(name = "authority_name", referencedColumnName = "name") })
+    @JoinTable(name = "user_authority",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")})
     private Set<Authority> authorities = new HashSet<>();
 
     @Override
@@ -100,14 +101,10 @@ public class User extends AbstractAuditingEntity<Long> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(lastName, user.lastName) && Objects.equals(firstName, user.firstName)
-                && Objects.equals(email, user.email) && Objects.equals(imageUrl, user.imageUrl)
-                && Objects.equals(publicId, user.publicId);
+        return Objects.equals(lastName, user.lastName) && Objects.equals(firstName, user.firstName) && Objects.equals(email, user.email) && Objects.equals(imageUrl, user.imageUrl) && Objects.equals(publicId, user.publicId);
     }
 
     @Override

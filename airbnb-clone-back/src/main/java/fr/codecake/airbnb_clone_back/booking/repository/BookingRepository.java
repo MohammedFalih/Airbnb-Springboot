@@ -1,4 +1,4 @@
-package fr.codecake.airbnb_clone_back.repository;
+package fr.codecake.airbnb_clone_back.booking.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

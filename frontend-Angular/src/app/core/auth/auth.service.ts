@@ -53,8 +53,10 @@ export class AuthService {
   }
 
   logout(): void {
+    console.log('logout hitted');
     this.http.post(`${environment.API_URL}/auth/logout`, {}).subscribe({
       next: (response: any) => {
+        console.log('response logout', response)
         this.fetchUser$.set(
           State.Builder<User>().forSuccess({ email: this.notConnected })
         );

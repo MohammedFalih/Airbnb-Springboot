@@ -44,4 +44,4 @@ okta:
     client-secret: ${AUTH0_CLIENT_SECRET}
 application:
   auth0:
-    role-landlord-id: rol_7YJiT5EFNwqYyLdA
+    role-landlord-id: rol_RB7e53AnePQC5U0q
