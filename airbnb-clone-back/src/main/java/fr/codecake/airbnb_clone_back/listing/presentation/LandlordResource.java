@@ -1,0 +1,113 @@
+package fr.codecake.airbnb_clone_back.listing.presentation;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import fr.codecake.airbnb_clone_back.infrastructure.config.SecurityUtils;
+import fr.codecake.airbnb_clone_back.listing.application.LandlordService;
+import fr.codecake.airbnb_clone_back.listing.application.dto.CreatedListingDTO;
+import fr.codecake.airbnb_clone_back.listing.application.dto.DisplayCardListingDTO;
+import fr.codecake.airbnb_clone_back.listing.application.dto.SaveListingDTO;
+import fr.codecake.airbnb_clone_back.listing.application.dto.sub.PictureDTO;
+import fr.codecake.airbnb_clone_back.sharedkernal.service.State;
+import fr.codecake.airbnb_clone_back.sharedkernal.service.StatusNotification;
+import fr.codecake.airbnb_clone_back.user.application.UserException;
+import fr.codecake.airbnb_clone_back.user.application.UserService;
+import fr.codecake.airbnb_clone_back.user.application.dto.ReadUserDTO;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+
+@RestController
+@RequestMapping("/api/landlord-listing")
+public class LandlordResource {
+
+    private final LandlordService landlordService;
+
+    private final UserService userService;
+
+    private final Validator validator;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    public LandlordResource(LandlordService landlordService, UserService userService, Validator validator) {
+        this.landlordService = landlordService;
+        this.userService = userService;
+        this.validator = validator;
+    }
+
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CreatedListingDTO> create(
+            MultipartHttpServletRequest request,
+            @RequestPart(name = "dto") String saveListingDTOString) throws IOException {
+        List<PictureDTO> pictures = request.getFileMap()
+                .values()
+                .stream()
+                .map(mapMultipartFileToPictureDTO())
+                .toList();
+
+        SaveListingDTO saveListingDTO = objectMapper.readValue(saveListingDTOString, SaveListingDTO.class);
+        saveListingDTO.setPictures(pictures);
+
+        Set<ConstraintViolation<SaveListingDTO>> violations = validator.validate(saveListingDTO);
+        if (!violations.isEmpty()) {
+            String violationsJoined = violations.stream()
+                    .map(violation -> violation.getPropertyPath() + " " + violation.getMessage())
+                    .collect(Collectors.joining());
+
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, violationsJoined);
+            return ResponseEntity.of(problemDetail).build();
+        } else {
+            return ResponseEntity.ok(landlordService.create(saveListingDTO));
+        }
+    }
+
+    public static Function<MultipartFile, PictureDTO> mapMultipartFileToPictureDTO() {
+        return multipartFile -> {
+            try {
+                return new PictureDTO(multipartFile.getBytes(), multipartFile.getContentType(), false);
+            } catch (IOException e) {
+                throw new UserException(
+                        String.format("Cannot parse multipart file: %s", multipartFile.getOriginalFilename()));
+            }
+        };
+    }
+
+    @GetMapping("/get-all")
+    @PreAuthorize("hasAnyRole('" + SecurityUtils.ROLE_LANDLORD + "')")
+    public ResponseEntity<List<DisplayCardListingDTO>> getAll() {
+        ReadUserDTO connectedUser = userService.getAuthenticatedUserFromSecurityContext();
+        List<DisplayCardListingDTO> properties = landlordService.getAllProperties(connectedUser);
+        return ResponseEntity.ok(properties);
+    }
+
+    @DeleteMapping("/delete")
+    @PreAuthorize("hasAnyRole('" + SecurityUtils.ROLE_LANDLORD + "')")
+    public ResponseEntity<UUID> delete(@RequestParam UUID publicId) {
+        ReadUserDTO connectedUser = userService.getAuthenticatedUserFromSecurityContext();
+        State<UUID, String> deleteState = landlordService.delete(publicId, connectedUser);
+        if (deleteState.getStatus().equals(StatusNotification.OK)) {
+            return ResponseEntity.ok(deleteState.getValue());
+        } else if (deleteState.getStatus().equals(StatusNotification.UNAUTHORIZED)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+    }
+
+}
