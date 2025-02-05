@@ -24,26 +24,27 @@ export class LandlordListingService {
   createSig = computed(() => this.create$());
 
   create(newListing: NewListing): void {
+    console.log("createlisting:2")
     const formData = new FormData();
-    for (let i = 0; i < newListing.pictures.length; i++) {
+    for (let i = 0; i < newListing.pictures.length; ++i) {
       formData.append('picture-' + i, newListing.pictures[i].file);
-      const clone = structuredClone(newListing);
-      clone.pictures = [];
-
-      this.http
-        .post<CreatedListing>(
-          `${environment.API_URL}/landlord-listing/create`,
-          formData
-        )
-        .subscribe({
-          next: (listing) =>
-            this.create$.set(
-              State.Builder<CreatedListing>().forSuccess(listing)
-            ),
-          error: (err) =>
-            this.create$.set(State.Builder<CreatedListing>().forError(err)),
-        });
     }
+    const clone = structuredClone(newListing);
+    clone.pictures = [];
+    formData.append('dto', JSON.stringify(clone));
+    this.http
+      .post<CreatedListing>(
+        `${environment.API_URL}/landlord-listing/create`,
+        formData
+      )
+      .subscribe({
+        next: (listing) =>
+          this.create$.set(State.Builder<CreatedListing>().forSuccess(listing)),
+        error: (err) =>{
+          console.log("error on creating list: ", err);
+          this.create$.set(State.Builder<CreatedListing>().forError(err));
+        }
+      });
   }
 
   resetListingCreation() {

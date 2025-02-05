@@ -17,10 +17,9 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([authExpired]),
       withXsrfConfiguration({
         cookieName: 'XSRF-TOKEN',
-        headerName: 'X=XSRF-TOKEN',
+        headerName: 'X-XSRF-TOKEN',
       })
     ),
-    provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
   ],
 };

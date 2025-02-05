@@ -7,11 +7,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -44,11 +43,15 @@ public class LandlordResource {
         this.validator = validator;
     }
 
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CreatedListingDTO> create(
             MultipartHttpServletRequest request,
             @RequestPart(name = "dto") String saveListingDTOString) throws IOException {
-        List<PictureDTO> pictures = request.getFileMap().values().stream()
-                .map(mapMultipartFileToPictureDTO()).toList();
+        List<PictureDTO> pictures = request.getFileMap()
+                .values()
+                .stream()
+                .map(mapMultipartFileToPictureDTO())
+                .toList();
 
         SaveListingDTO saveListingDTO = objectMapper.readValue(saveListingDTOString, SaveListingDTO.class);
         saveListingDTO.setPictures(pictures);

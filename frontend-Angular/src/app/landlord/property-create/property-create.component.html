@@ -13,7 +13,7 @@
   
         </app-location-step>
       }
-      <!--  @case (INFO) {
+        @case (INFO) {
         <div class="mb-5">
           <h1 class="mb-1">Share some basics about your place</h1>
           <h2 class="mt-0">You'll add more details later, like bed types.</h2>
@@ -25,7 +25,7 @@
       @case (PHOTOS) {
         <app-picture-step [pictures]="newListing.pictures"
                           (picturesChange)="onPictureChange($event)"
-                          (stepValidityChange)="onValidityChange($event)"></app-picture-step>
+                          (stepValidityChange)="onValidityChange($event)">></app-picture-step>
       }
       @case (DESCRIPTION) {
         <app-description-step [description]="newListing.description"
@@ -36,7 +36,7 @@
         <app-price-step [price]="newListing.price"
                         (priceChange)="onPriceChange($event)"
                         (stepValidityChange)="onValidityChange($event)"></app-price-step>
-      } -->
+      }
   }
 </div>
 <app-footer-step
