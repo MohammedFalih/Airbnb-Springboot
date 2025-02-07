@@ -100,6 +100,7 @@ public class BookingService {
         }).toList();
     }
 
+    @Transactional
     public State<UUID, String> cancel(UUID bookingPublicId, UUID listingPublicId, boolean byLandlord) {
         ReadUserDTO connectedUser = userService.getAuthenticatedUserFromSecurityContext();
         int deleteSuccess = 0;
