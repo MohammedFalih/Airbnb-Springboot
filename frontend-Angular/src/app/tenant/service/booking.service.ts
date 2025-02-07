@@ -42,6 +42,13 @@ export class BookingService {
   );
   cancelSig = computed(() => this.cancel$());
 
+  private getBookedListingForLandlord$: WritableSignal<
+    State<Array<BookedListing>>
+  > = signal(State.Builder<Array<BookedListing>>().forInit());
+  getBookedListingForLandlordSig = computed(() =>
+    this.getBookedListingForLandlord$()
+  );
+
   constructor() {}
 
   create(newBooking: CreateBooking) {
@@ -98,16 +105,41 @@ export class BookingService {
       });
   }
 
-  cancel(bookingPublicId: string, listingPublicId: string, byLandlord: boolean): void {
+  cancel(
+    bookingPublicId: string,
+    listingPublicId: string,
+    byLandlord: boolean
+  ): void {
     const params = new HttpParams()
-    .set("bookingPublicId", bookingPublicId)
-    .set("listingPublicId", listingPublicId)
-    .set("byLandlord", byLandlord);
-  this.http.delete<string>(`${environment.API_URL}/booking/cancel`, {params})
-    .subscribe({
-      next: canceledPublicId => this.cancel$.set(State.Builder<string>().forSuccess(canceledPublicId)),
-      error: err => this.cancel$.set(State.Builder<string>().forError(err)),
-    });
+      .set('bookingPublicId', bookingPublicId)
+      .set('listingPublicId', listingPublicId)
+      .set('byLandlord', byLandlord);
+    this.http
+      .delete<string>(`${environment.API_URL}/booking/cancel`, { params })
+      .subscribe({
+        next: (canceledPublicId) =>
+          this.cancel$.set(
+            State.Builder<string>().forSuccess(canceledPublicId)
+          ),
+        error: (err) => this.cancel$.set(State.Builder<string>().forError(err)),
+      });
+  }
+
+  getBookedListingForLandlord(): void {
+    this.http
+      .get<Array<BookedListing>>(
+        `${environment.API_URL}/booking/get-booked-listing-for-landlord`
+      )
+      .subscribe({
+        next: (bookedListings) =>
+          this.getBookedListingForLandlord$.set(
+            State.Builder<Array<BookedListing>>().forSuccess(bookedListings)
+          ),
+        error: (err) =>
+          this.getBookedListingForLandlord$.set(
+            State.Builder<Array<BookedListing>>().forError(err)
+          ),
+      });
   }
 
   resetCancel(): void {
