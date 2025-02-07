@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.codecake.airbnb_clone_back.booking.application.BookingService;
 import fr.codecake.airbnb_clone_back.booking.application.dto.BookedDateDTO;
+import fr.codecake.airbnb_clone_back.booking.application.dto.BookedListingDTO;
 import fr.codecake.airbnb_clone_back.booking.application.dto.NewBookingDTO;
 import fr.codecake.airbnb_clone_back.sharedkernal.service.State;
 import fr.codecake.airbnb_clone_back.sharedkernal.service.StatusNotification;
@@ -45,5 +47,22 @@ public class BookingResource {
     @GetMapping("check-availability")
     public ResponseEntity<List<BookedDateDTO>> checkAvailability(@RequestParam UUID listingPublicId) {
         return ResponseEntity.ok(bookingService.checkAvailability(listingPublicId));
+    }
+
+    @GetMapping("get-booked-listing")
+    public ResponseEntity<List<BookedListingDTO>> getBookedListing() {
+        return ResponseEntity.ok(bookingService.getBookedListing());
+    }
+
+    @DeleteMapping("cancel")
+    public ResponseEntity<UUID> cancel(@RequestParam UUID bookingPublicId, UUID listingPublicId, boolean byLandlord) {
+        State<UUID, String> cancelState = bookingService.cancel(bookingPublicId, listingPublicId, byLandlord);
+        if (cancelState.getStatus().equals(StatusNotification.ERROR)) {
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
+                    cancelState.getError());
+            return ResponseEntity.of(problemDetail).build();
+        } else {
+            return ResponseEntity.ok(bookingPublicId);
+        }
     }
 }
