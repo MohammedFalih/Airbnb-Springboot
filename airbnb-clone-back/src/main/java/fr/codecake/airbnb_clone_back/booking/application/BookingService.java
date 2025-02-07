@@ -130,4 +130,18 @@ public class BookingService {
         }
         return deleteSuccess;
     }
+
+    @Transactional(readOnly = true)
+    public List<BookedListingDTO> getBookedListingForLandlord() {
+        ReadUserDTO connectUser = userService.getAuthenticatedUserFromSecurityContext();
+        List<DisplayCardListingDTO> allProperties = landlordService.getAllProperties(connectUser);
+        List<UUID> allPropertyPublicIds = allProperties.stream().map(DisplayCardListingDTO::publicId).toList();
+        List<Booking> allBookings = bookingRepository.findAllByFkListingIn(allPropertyPublicIds);
+        return mapBookingToBookedListing(allBookings, allProperties);
+    }
+
+    public List<UUID> getBookingMatchByListingIdsAndBookedDate(List<UUID> listingsId, BookedDateDTO bookedDateDTO) {
+        return bookingRepository.findAllMatchWithDate(listingsId, bookedDateDTO.startDate(), bookedDateDTO.endDate())
+                .stream().map(Booking::getFkListing).toList();
+    }
 }

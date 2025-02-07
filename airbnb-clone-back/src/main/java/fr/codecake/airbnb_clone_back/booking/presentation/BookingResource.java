@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import fr.codecake.airbnb_clone_back.booking.application.BookingService;
 import fr.codecake.airbnb_clone_back.booking.application.dto.BookedDateDTO;
 import fr.codecake.airbnb_clone_back.booking.application.dto.BookedListingDTO;
 import fr.codecake.airbnb_clone_back.booking.application.dto.NewBookingDTO;
+import fr.codecake.airbnb_clone_back.infrastructure.config.SecurityUtils;
 import fr.codecake.airbnb_clone_back.sharedkernal.service.State;
 import fr.codecake.airbnb_clone_back.sharedkernal.service.StatusNotification;
 import jakarta.validation.Valid;
@@ -64,5 +66,11 @@ public class BookingResource {
         } else {
             return ResponseEntity.ok(bookingPublicId);
         }
+    }
+
+    @GetMapping("get-booked-listing-for-landlord")
+    @PreAuthorize("hasAnyRole('" + SecurityUtils.ROLE_LANDLORD + "')")
+    public ResponseEntity<List<BookedListingDTO>> getBookedListingForLandlord() {
+        return ResponseEntity.ok(bookingService.getBookedListingForLandlord());
     }
 }
