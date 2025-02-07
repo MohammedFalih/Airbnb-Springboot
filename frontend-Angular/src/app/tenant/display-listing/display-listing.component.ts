@@ -10,14 +10,14 @@ import { map } from 'rxjs';
 import { AvatarComponent } from '../../layout/navbar/avatar/avatar.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgClass } from '@angular/common';
+import { BookDateComponent } from "../book-date/book-date.component";
 
 @Component({
   selector: 'app-display-listing',
   standalone: true,
-  imports: [ NgClass,
+  imports: [NgClass,
     FaIconComponent,
-    AvatarComponent,
-    ],
+    AvatarComponent, BookDateComponent],
   templateUrl: './display-listing.component.html',
   styleUrl: './display-listing.component.scss',
 })
@@ -68,6 +68,7 @@ export class DisplayListingComponent implements OnInit, OnDestroy {
         this.loading = false;
         this.listing = listingByPublicIdState.value;
         if (this.listing) {
+          console.log('listing: ', this.listing)
           this.listing.pictures = this.putCoverPictureFirst(
             this.listing.pictures
           );
