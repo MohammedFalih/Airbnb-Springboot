@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 import fr.codecake.airbnb_clone_back.listing.application.dto.CreatedListingDTO;
 import fr.codecake.airbnb_clone_back.listing.application.dto.DisplayCardListingDTO;
 import fr.codecake.airbnb_clone_back.listing.application.dto.DisplayListingDTO;
+import fr.codecake.airbnb_clone_back.listing.application.dto.ListingCreateBookingDTO;
 import fr.codecake.airbnb_clone_back.listing.application.dto.SaveListingDTO;
 import fr.codecake.airbnb_clone_back.listing.application.dto.vo.PriceVO;
 import fr.codecake.airbnb_clone_back.listing.domain.Listing;
@@ -53,4 +54,7 @@ public interface ListingMapper {
     @Mapping(target = "category", source = "bookingCategory")
     @Mapping(target = "price.value", source = "price")
     DisplayListingDTO listingToDisplayListingDTO(Listing listing);
+
+    @Mapping(target = "listingPublicId", source = "publicId")
+    ListingCreateBookingDTO mapListingToListingCreateBookingDTO(Listing listing);
 }

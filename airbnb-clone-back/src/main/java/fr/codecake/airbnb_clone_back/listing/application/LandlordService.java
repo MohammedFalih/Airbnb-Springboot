@@ -1,6 +1,7 @@
 package fr.codecake.airbnb_clone_back.listing.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.codecake.airbnb_clone_back.listing.application.dto.CreatedListingDTO;
 import fr.codecake.airbnb_clone_back.listing.application.dto.DisplayCardListingDTO;
+import fr.codecake.airbnb_clone_back.listing.application.dto.ListingCreateBookingDTO;
 import fr.codecake.airbnb_clone_back.listing.application.dto.SaveListingDTO;
 import fr.codecake.airbnb_clone_back.listing.domain.Listing;
 import fr.codecake.airbnb_clone_back.listing.mapper.ListingMapper;
@@ -63,6 +65,10 @@ public class LandlordService {
         } else {
             return State.<UUID, String>builder().forError("User not authorized to delete this listing");
         }
+    }
+
+    public Optional<ListingCreateBookingDTO> getByListingPublicId(UUID publicId) {
+        return listingRepository.findByPublicId(publicId).map(listingMapper::mapListingToListingCreateBookingDTO);
     }
 
 }
