@@ -16,6 +16,7 @@ import {
 import { Subject } from 'rxjs';
 import { CategoryName } from '../layout/navbar/category/category.model';
 import { environment } from '../../environments/environment';
+import { Search } from './search/search.model';
 
 @Injectable({
   providedIn: 'root',
@@ -82,12 +83,12 @@ export class TenantListingService {
     this.getOneByPublicId$.set(State.Builder<Listing>().forInit());
   }
 
-  // searchListing(newSearch: Search, pageRequest: Pagination): void {
-  //   const params = createPaginationOption(pageRequest);
-  //   this.http.post<Page<CardListing>>(`${environment.API_URL}/tenant-listing/search`, newSearch, {params})
-  //     .subscribe({
-  //       next: displayListingCards => this.search$.next(State.Builder<Page<CardListing>>().forSuccess(displayListingCards)),
-  //       error: err => this.search$.next(State.Builder<Page<CardListing>>().forError(err))
-  //     })
-  // }
+  searchListing(newSearch: Search, pageRequest: Pagination): void {
+    const params = createPaginationOption(pageRequest);
+    this.http.post<Page<CardListing>>(`${environment.API_URL}/tenant-listing/search`, newSearch, {params})
+      .subscribe({
+        next: displayListingCards => this.search$.next(State.Builder<Page<CardListing>>().forSuccess(displayListingCards)),
+        error: err => this.search$.next(State.Builder<Page<CardListing>>().forError(err))
+      })
+  }
 }
