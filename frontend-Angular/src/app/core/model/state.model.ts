@@ -4,7 +4,7 @@ export type StatusNotification = 'OK' | 'ERROR' | 'INIT';
 
 export class State<T, V = HttpErrorResponse> {
   value?: T;
-  error?: V | HttpErrorResponse; // Allow error to be V or HttpErrorResponse
+  error?: V | HttpErrorResponse; 
   status: StatusNotification;
 
   constructor(status: StatusNotification, value?: T, error?: V | HttpErrorResponse) {

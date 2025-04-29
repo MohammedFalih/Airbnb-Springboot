@@ -113,7 +113,6 @@ export class LocationMapComponent {
       }
     });
   }
-
   
   changeMapLocation(term: string) {
     this.currentLocation = this.countries.find(

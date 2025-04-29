@@ -16,7 +16,7 @@ export class FooterStepComponent {
   labelFinishedBtn = input<string>('Finish');
 
   @Output()
-  finish = new EventEmitter<boolean>();
+    finish = new EventEmitter<boolean>();
   @Output()
   previous = new EventEmitter<boolean>();
   @Output()
